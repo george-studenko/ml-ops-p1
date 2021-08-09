@@ -57,6 +57,8 @@ def perform_eda(data_frame):
         linewidth=0)
     save_image('images/eda/Total_transactions.png')
 
+    sns.heatmap(data_frame.corr(), annot=False, cmap='Dark2_r', linewidths=2)
+    save_image('images/eda/heatmap.png')
 
 
 def encoder_helper(data_frame, category_lst):
