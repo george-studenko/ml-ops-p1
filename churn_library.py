@@ -1,7 +1,7 @@
 """Functions to perform analysis on customer churn"""
 
-import shap
 import logging
+import shap
 from sklearn.metrics import plot_roc_curve, classification_report
 from sklearn.model_selection import GridSearchCV
 from sklearn.ensemble import RandomForestClassifier
@@ -208,7 +208,7 @@ def feature_importance_plot(model, X_data, output_pth):
 def analyze_classes_per_feature(model, X_test):
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(X_test)
-    fig = shap.summary_plot(shap_values, X_test, plot_type="bar", show=False)
+    _ = shap.summary_plot(shap_values, X_test, plot_type="bar", show=False)
     plt.margins()
     save_image('images/results/churn_vs_no_churn.png')
 
