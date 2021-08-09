@@ -1,5 +1,6 @@
 """Functions to perform analysis on customer churn"""
 
+import shap
 import logging
 from sklearn.metrics import plot_roc_curve, classification_report
 from sklearn.model_selection import GridSearchCV
@@ -55,6 +56,7 @@ def perform_eda(data_frame):
         stat="density",
         linewidth=0)
     save_image('images/eda/Total_transactions.png')
+
 
 
 def encoder_helper(data_frame, category_lst):
@@ -203,10 +205,16 @@ def feature_importance_plot(model, X_data, output_pth):
     # Save figure to disk
     save_image(output_pth)
 
+def analyze_classes_per_feature(model, X_test):
+    explainer = shap.TreeExplainer(model)
+    shap_values = explainer.shap_values(X_test)
+    fig = shap.summary_plot(shap_values, X_test, plot_type="bar", show=False)
+    plt.margins()
+    save_image('images/results/churn_vs_no_churn.png')
 
 def save_image(path):
     """Save pyplot images to disk"""
-    plt.savefig(path)
+    plt.savefig(path, bbox_inches='tight')
     plt.close(None)
 
 
@@ -318,3 +326,4 @@ def train_models(X_train, X_test, y_train, y_test):
         'images/results/feature_importance_plot.png')
 
     save_roc_curves(lrc, best_random_forest_model, X_test, y_test)
+    analyze_classes_per_feature(best_random_forest_model, X_test)
