@@ -257,7 +257,7 @@ def save_roc_curves(lrc, random_forest_model, X_test, y_test):
     ax = plt.gca()
     plot_roc_curve(random_forest_model, X_test, y_test, ax=ax, alpha=0.8)
     lrc_plot.plot(ax=ax, alpha=0.8)
-    save_image('results/roc_curve.png')
+    save_image('images/results/roc_curve.png')
 
 
 
