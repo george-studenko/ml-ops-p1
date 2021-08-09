@@ -1,20 +1,18 @@
 """Functions to perform analysis on customer churn"""
 
+import logging
+from sklearn.metrics import plot_roc_curve, classification_report
+from sklearn.model_selection import GridSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import train_test_split
 import joblib
 import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
-import seaborn as sns;
+import seaborn as sns
 
 sns.set()
-
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import plot_roc_curve, classification_report
-
-import logging
 
 
 def import_data(pth):
@@ -24,67 +22,70 @@ def import_data(pth):
     input:
             pth: a path to the csv
     output:
-            df: pandas dataframe
+            data_frame: pandas dataframe
     '''
-    df = pd.read_csv(pth)
-    return df
+    data_frame = pd.read_csv(pth)
+    return data_frame
 
 
-def perform_eda(df):
+def perform_eda(data_frame):
     '''
-    perform eda on df and save figures to images folder
+    perform eda on data_frame and save figures to images folder
     input:
-            df: pandas dataframe
+            data_frame: pandas dataframe
 
     output:
             None
     '''
-    df['Churn'] = df['Attrition_Flag'].apply(lambda val: 0 if val == "Existing Customer" else 1)
+    data_frame['Churn'] = data_frame['Attrition_Flag'].apply(
+        lambda val: 0 if val == "Existing Customer" else 1)
 
-    df['Churn'].hist()
+    data_frame['Churn'].hist()
     save_image('images/eda/Churn.png')
 
-    df['Customer_Age'].hist()
+    data_frame['Customer_Age'].hist()
     save_image('images/eda/Customer_Age.png')
 
-    df.Marital_Status.value_counts('normalize').plot(kind='bar')
+    data_frame.Marital_Status.value_counts('normalize').plot(kind='bar')
     save_image('images/eda/Marital_Status.png')
 
-    sns.histplot(df['Total_Trans_Ct'], kde=True, stat="density", linewidth=0)
+    sns.histplot(
+        data_frame['Total_Trans_Ct'],
+        kde=True,
+        stat="density",
+        linewidth=0)
     save_image('images/eda/Total_transactions.png')
 
 
-def encoder_helper(df, category_lst, response=None):
+def encoder_helper(data_frame, category_lst):
     '''
     helper function to turn each categorical column into a new column with
     propotion of churn for each category - associated with cell 15 from the notebook
 
     input:
-            df: pandas dataframe
-            category_lst: list of columns that contain categorical features
-            response: string of response name [optional argument that could be used for naming variables or index y column]
+        data_frame: pandas dataframe
+        category_lst: list of columns that contain categorical features
 
     output:
-            df: pandas dataframe with new columns for
+        data_frame: pandas dataframe with new columns for
     '''
     for category in category_lst:
         lst = []
-        groups = df.groupby(category).mean()['Churn']
+        groups = data_frame.groupby(category).mean()['Churn']
 
-        for val in df[category]:
+        for val in data_frame[category]:
             lst.append(groups.loc[val])
         new_column = category + '_Churn'
 
-        df[new_column] = lst
+        data_frame[new_column] = lst
 
-    return df
+    return data_frame
 
 
-def perform_feature_engineering(df, response=None):
+def perform_feature_engineering(data_frame):
     '''
     input:
-      df: pandas dataframe
-      response: string of response name [optional argument that could be used for naming variables or index y column]
+      data_frame: pandas dataframe
 
     output:
       X_train: X training data
@@ -92,19 +93,33 @@ def perform_feature_engineering(df, response=None):
       y_train: y training data
       y_test: y testing data
     '''
-    y = df['Churn']
+    y = data_frame['Churn']
     X = pd.DataFrame()
-    keep_cols = ['Customer_Age', 'Dependent_count', 'Months_on_book',
-                 'Total_Relationship_Count', 'Months_Inactive_12_mon',
-                 'Contacts_Count_12_mon', 'Credit_Limit', 'Total_Revolving_Bal',
-                 'Avg_Open_To_Buy', 'Total_Amt_Chng_Q4_Q1', 'Total_Trans_Amt',
-                 'Total_Trans_Ct', 'Total_Ct_Chng_Q4_Q1', 'Avg_Utilization_Ratio',
-                 'Gender_Churn', 'Education_Level_Churn', 'Marital_Status_Churn',
-                 'Income_Category_Churn', 'Card_Category_Churn']
+    keep_cols = [
+        'Customer_Age',
+        'Dependent_count',
+        'Months_on_book',
+        'Total_Relationship_Count',
+        'Months_Inactive_12_mon',
+        'Contacts_Count_12_mon',
+        'Credit_Limit',
+        'Total_Revolving_Bal',
+        'Avg_Open_To_Buy',
+        'Total_Amt_Chng_Q4_Q1',
+        'Total_Trans_Amt',
+        'Total_Trans_Ct',
+        'Total_Ct_Chng_Q4_Q1',
+        'Avg_Utilization_Ratio',
+        'Gender_Churn',
+        'Education_Level_Churn',
+        'Marital_Status_Churn',
+        'Income_Category_Churn',
+        'Card_Category_Churn']
 
-    X[keep_cols] = df[keep_cols]
+    X[keep_cols] = data_frame[keep_cols]
 
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.3, random_state=42)
     return X_train, X_test, y_train, y_test
 
 
@@ -128,9 +143,29 @@ def classification_report_image(y_train,
     output:
              None
     '''
-    pass
-    #lrc_plot = plot_roc_curve(lrc, X_test, y_test)
+    plt.rc('figure', figsize=(5, 5))
+    plt.text(0.01, 1.25, str('Random Forest Train'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_test, y_test_preds_rf)), {'fontsize': 10},
+             fontproperties='monospace')  # approach improved by OP -> monospace!
 
+    plt.text(0.01, 0.6, str('Random Forest Test'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.7, str(classification_report(y_train, y_train_preds_rf)), {'fontsize': 10},
+             fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.axis('off')
+
+    plt.rc('figure', figsize=(5, 5))
+    plt.text(0.01, 1.25, str('Logistic Regression Train'),
+             {'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.05, str(classification_report(y_train, y_train_preds_lr)), {
+             'fontsize': 10}, fontproperties='monospace')  # approach improved by OP -> monospace!
+
+    plt.text(0.01, 0.6, str('Logistic Regression Test'), {
+             'fontsize': 10}, fontproperties='monospace')
+    plt.text(0.01, 0.7, str(classification_report(y_test, y_test_preds_lr)), {'fontsize': 10},
+             fontproperties='monospace')  # approach improved by OP -> monospace!
+    plt.axis('off')
 
 
 def feature_importance_plot(model, X_data, output_pth):
@@ -163,28 +198,35 @@ def feature_importance_plot(model, X_data, output_pth):
     plt.bar(range(X_data.shape[1]), importances[indices])
 
     # Add feature names as x-axis labels
-    plt.xticks(range(X_data.shape[1]), names, rotation=90);
+    plt.xticks(range(X_data.shape[1]), names, rotation=90)
 
     # Save figure to disk
     save_image(output_pth)
 
 
 def save_image(path):
+    """Save pyplot images to disk"""
     plt.savefig(path)
     plt.close(None)
 
 
-def log_results(y_test, y_train, y_test_preds_rf, y_train_preds_rf, y_train_preds_lr, y_test_preds_lr):
+def log_results(
+        y_test,
+        y_train,
+        y_test_preds_rf,
+        y_train_preds_rf,
+        y_train_preds_lr,
+        y_test_preds_lr):
     """
     Write classifiers results to log files.
 
     Input:
          y_test: y testing data
          y_train: y training data
-         y_test_preds_rf: y predictions of the test dataset for the random forest classifier.
-         y_train_preds_rf: y predictions of the train dataset for the random forest classifier.
-         y_train_preds_lr: y predictions of the train dataset for the logistic regression classifier.
-         y_test_preds_lr: y predictions of the test dataset for the logistic regression classifier.
+         y_test_preds_rf: y predictions of the test dataset for random forest.
+         y_train_preds_rf: y predictions of the train dataset for random forest.
+         y_train_preds_lr: y predictions of the train dataset for logistic regression.
+         y_test_preds_lr: y predictions of the test dataset for logistic regression.
     Output:
         None
     """
@@ -206,6 +248,17 @@ def log_results(y_test, y_train, y_test_preds_rf, y_train_preds_rf, y_train_pred
     logging.info(classification_report(y_test, y_test_preds_lr))
     logging.info('train results')
     logging.info(classification_report(y_train, y_train_preds_lr))
+
+
+def save_roc_curves(lrc, random_forest_model, X_test, y_test):
+    """Plot and save roc curve for models"""
+    lrc_plot = plot_roc_curve(lrc, X_test, y_test)
+    plt.figure(figsize=(15, 8))
+    ax = plt.gca()
+    plot_roc_curve(random_forest_model, X_test, y_test, ax=ax, alpha=0.8)
+    lrc_plot.plot(ax=ax, alpha=0.8)
+    save_image('results/roc_curve.png')
+
 
 
 def train_models(X_train, X_test, y_train, y_test):
@@ -251,8 +304,17 @@ def train_models(X_train, X_test, y_train, y_test):
     # save logistic regression model
     joblib.dump(lrc, './models/logistic_model.pkl')
 
-    log_results(y_test, y_train, y_test_preds_rf, y_train_preds_rf, y_train_preds_lr, y_test_preds_lr)
+    log_results(
+        y_test,
+        y_train,
+        y_test_preds_rf,
+        y_train_preds_rf,
+        y_train_preds_lr,
+        y_test_preds_lr)
 
-    feature_importance_plot(best_random_forest_model, X_train, 'images/results/feature_importance_plot.png')
+    feature_importance_plot(
+        best_random_forest_model,
+        X_train,
+        'images/results/feature_importance_plot.png')
 
-
+    save_roc_curves(lrc, best_random_forest_model, X_test, y_test)
