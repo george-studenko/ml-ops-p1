@@ -1,0 +1,62 @@
+// 20211217144410
+// https://mobiuslabs-demo.bynder.com/api/v4/media/D949F84A-5CCF-4CB8-A556D21A6A9AE71C
+
+{
+  "copyright": "",
+  "tags": [
+    "car",
+    "mode of transportation",
+    "blue",
+    "sky",
+    "road",
+    "vintage car",
+    "driving",
+    "sports car",
+    "wheel",
+    "automobile",
+    "family car",
+    "nature",
+    "retro styled",
+    "city car",
+    "vehicle",
+    "motor vehicle",
+    "land vehicle",
+    "transportation",
+    "tree"
+  ],
+  "id": "D949F84A-5CCF-4CB8-A556D21A6A9AE71C",
+  "description": "",
+  "extension": [
+    "jpg"
+  ],
+  "type": "image",
+  "userCreated": "Tim Henning",
+  "dateCreated": "2021-10-20T13:53:58Z",
+  "idHash": "207552f715b6a1f0",
+  "isPublic": 0,
+  "height": 333,
+  "orientation": "landscape",
+  "archive": 0,
+  "dateModified": "2021-10-20T13:54:09Z",
+  "datePublished": "2021-10-20T13:53:09Z",
+  "fileSize": 62691,
+  "brandId": "93347BF8-C17D-405F-B7D40579B02620F9",
+  "name": "photo-1541899481282-d53bffe3c35d",
+  "width": 500,
+  "watermarked": 0,
+  "limited": 0,
+  "property_mobiusTags": "land vehicle,nature,car,vehicle,sky,road,retro styled,blue,motor vehicle,wheel,mode of transportation,sports car,vintage car,tree,city car,transportation,automobile,family car,driving",
+  "property_mobiusProcessed": "true",
+  "thumbnails": {
+    "mini": "https://mobiuslabs-demo.bynder.com/m/207552f715b6a1f0/mini-photo-1541899481282-d53bffe3c35d.png",
+    "webimage": "https://mobiuslabs-demo.bynder.com/m/207552f715b6a1f0/webimage-photo-1541899481282-d53bffe3c35d.png",
+    "thul": "https://mobiuslabs-demo.bynder.com/m/207552f715b6a1f0/thul-photo-1541899481282-d53bffe3c35d.png"
+  },
+  "ecsArchiveFiles": [
+    
+  ],
+  "activeOriginalFocusPoint": {
+    "y": 166.5,
+    "x": 250
+  }
+}
